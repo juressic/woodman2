@@ -10,37 +10,43 @@ public class MouseManager : MonoBehaviour
 
     public EventVector3 OnClickEnviroment;
 
-    public EventVector3 OnClickTree;
+    public EventVoid OnClickFunction;
 
     public Texture2D terrain;
     public Texture2D offTerrain;
-    public Texture2D doorway;
+    public Texture2D tree;
+
+    public Player player;
     // Update is called once per frame
     void Update()
     {
         RaycastHit hit;
         if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity,clickable.value))
         {
-            bool door = false;
+            bool cutTree = false;
             if (hit.collider.gameObject.tag == "Terrain")
             {
                 Cursor.SetCursor(terrain, new Vector2(16, 16), CursorMode.Auto);
             }
-            else if(hit.collider.gameObject.tag == "doorway")
+            else if(hit.collider.gameObject.tag == "Tree")
             {
-                Cursor.SetCursor(doorway, new Vector2(16, 16), CursorMode.Auto);
-                door = true;
+                Debug.Log("Tree");
+                Cursor.SetCursor(tree, new Vector2(16, 16), CursorMode.Auto);
+                cutTree = true;
             }
 
             if (Input.GetMouseButtonDown(0))
             {
-                if(door == true)
+                if(cutTree == true)
                 {
-                    Transform doorway1 = hit.collider.gameObject.transform;
-                    OnClickEnviroment.Invoke(doorway1.position + doorway1.forward * 10);
-                    //Debug.Log("doorway");
+                    Debug.Log("tree collision");
+                    StartCoroutine(player.CutTree(hit.transform.gameObject));
                 }
-                OnClickEnviroment.Invoke(hit.point);
+                else
+                {
+                    OnClickEnviroment.Invoke(hit.point);
+                }
+                
             }
         }
         else
@@ -52,3 +58,6 @@ public class MouseManager : MonoBehaviour
 
 [System.Serializable]
 public class EventVector3 : UnityEvent<Vector3> { }
+
+[System.Serializable]
+public class EventVoid : UnityEvent<EventVoid> { }
